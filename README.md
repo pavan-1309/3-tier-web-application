@@ -217,10 +217,182 @@ echo "=== App Tier User-data Completed ==="
 
 ## Create Auto Scaling Groups
 
+<<<<<<< HEAD
 | Name         | Launch Template | Instance | Subnets     | LB       | Desired | Min | Max | Notifications |
 |--------------|-----------------|----------|-------------|----------|---------|-----|-----|---------------||
 | web-tier-asg | web-tier-lb     | t2.micro | Web subnets | web-tier | 3       | 3   | 6   | web-tier-sns  |
 | app-tier-asg | app-tier-lb     | t2.micro | App subnets | app-tier | 3       | 3   | 6   | app-tier-sns  |
+=======
+### Web Tier ASG
+- **Name**: web-tier-asg
+- **Launch Template**: web-launch-template
+- **Instance Type**: t2.micro
+- **Subnets**: Web-Private-Subnet-1a, 1b, 1c
+- **Load Balancer**: web-alb (web-tier target group)
+- **Desired**: 2
+- **Min**: 2
+- **Max**: 4
+- **Health Check**: ELB
+- **Notifications**: web-tier-sns
+
+### App Tier ASG
+- **Name**: app-tier-asg
+- **Launch Template**: app-launch-template
+- **Instance Type**: t2.micro
+- **Subnets**: App-Private-Subnet-1a, 1b, 1c
+- **Load Balancer**: app-alb (app-tier target group)
+- **Desired**: 2
+- **Min**: 2
+- **Max**: 4
+- **Health Check**: ELB
+- **Notifications**: app-tier-sns
+
+## Configure CloudWatch Alarms
+
+1. **Web Tier CPU Alarm**
+   - Metric: CPUUtilization > 70%
+   - Action: Scale up web-tier-asg
+   - SNS: Cloudwatch-sns
+
+2. **App Tier CPU Alarm**
+   - Metric: CPUUtilization > 70%
+   - Action: Scale up app-tier-asg
+   - SNS: Cloudwatch-sns
+
+3. **RDS Connection Alarm**
+   - Metric: DatabaseConnections > 80
+   - SNS: Cloudwatch-sns
+
+## Setup CloudFront Distribution
+
+1. **Origin**: web-alb DNS name
+2. **Viewer Protocol**: Redirect HTTP to HTTPS
+3. **Allowed HTTP Methods**: GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE
+4. **Cache Policy**: CachingOptimized
+5. **Origin Protocol**: HTTP only
+
+## Configure ACM (SSL Certificate)
+
+1. Request public certificate
+2. Domain name: yourdomain.com, *.yourdomain.com
+3. Validation: DNS validation
+4. Attach to CloudFront distribution
+
+## Setup WAF (Web Application Firewall)
+
+1. **Web ACL Name**: 3-tier-waf
+2. **Resource**: CloudFront distribution
+3. **Rules**:
+   - AWS Managed Rules - Core rule set
+   - AWS Managed Rules - Known bad inputs
+   - Rate limiting: 2000 requests per 5 minutes
+
+## Configure Route 53
+
+1. **Hosted Zone**: yourdomain.com
+2. **Record**:
+   - Name: www.yourdomain.com
+   - Type: A (Alias)
+   - Target: CloudFront distribution
+
+## Testing
+
+1. Access CloudFront URL or custom domain
+2. Verify web tier loads correctly
+3. Test database connectivity through app tier
+4. Check auto-scaling triggers
+5. Monitor CloudWatch metrics
+6. Verify SNS notifications
+
+## Cleanup
+
+1. Delete CloudFront distribution
+2. Delete Auto Scaling Groups
+3. Delete Load Balancers
+4. Delete Target Groups
+5. Delete Launch Templates
+6. Delete RDS instance
+7. Delete NAT Gateways
+8. Delete VPC
+9. Delete S3 buckets
+10. Delete CloudWatch alarms
+11. Delete SNS topics
+12. Delete Secrets Manager secrets
+13. Delete CloudTrail
+14. Delete WAF Web ACL
+15. Delete Route 53 records
+
+## Architecture Diagram
+
+```
+Internet
+    |
+    v
+Route 53 → CloudFront (CDN) → WAF
+                |
+                v
+        Internet Gateway
+                |
+                v
+        Public Subnets (3 AZs)
+                |
+                v
+        Web ALB (Internet-facing)
+                |
+                v
+        Web Tier ASG (Private Subnets)
+                |
+                v
+        App ALB (Internal)
+                |
+                v
+        App Tier ASG (Private Subnets)
+                |
+                v
+        RDS MySQL (Multi-AZ)
+```
+
+## Cost Optimization Tips
+
+- Use t3.micro instead of t2.micro for better performance
+- Enable RDS automated backups with 7-day retention
+- Use S3 lifecycle policies for old logs
+- Delete unused NAT Gateways during testing
+- Use Reserved Instances for production
+
+## Security Best Practices
+
+✅ All instances in private subnets
+✅ Security groups with least privilege
+✅ Database credentials in Secrets Manager
+✅ VPC Flow Logs enabled
+✅ CloudTrail for audit logging
+✅ WAF for application protection
+✅ SSL/TLS encryption with ACM
+✅ IAM roles instead of access keys
+
+## Monitoring & Alerts
+
+- CloudWatch dashboards for all tiers
+- SNS notifications for critical events
+- VPC Flow Logs in S3
+- CloudTrail logs for API activity
+- RDS performance insights
+- ALB access logs
+
+---
+
+**Project Status**: ✅ Production Ready
+
+**Last Updated**: February 2026            template                                                            
+  -------------- ------------- ---------- --------- ---------- --------- ----- ----- ---------------
+  web-tier-asg   web-tier-lb   t2.micro   Web       web-tier   3         3     6     web-tier-sns
+                                          subnets                                    
+
+  app-tier-asg   app-tier-lb   t2.micro   App       app-tier   3         3     6     app-tier-sns
+                                          subnets                                    
+  --------------------------------------------------------------------------------------------------
+>>>>>>> b7f6cc7d95b300de5604c2a37f7be173c8f46c75
 
 ## CloudWatch
 
