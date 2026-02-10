@@ -19,95 +19,56 @@
 
 ## Create a Security Group
 
-  --------------------------------------------------------------------------------------------
-  SG name               inbound      Access                Description
-  --------------------- ------------ --------------------- -----------------------------------
-  Jump Server           22           MY-ip                 access from my laptop
-
-  web-frontend-alb      80,          0.0.0.0/0             all access from internet
-
-  Web-srv-sg            80, 22       web-frontend-alb      only front-alb and jump server
-                                                           access
-
-                                     jump-server           
-
-  app-Internal-alb-sg   80           Web-srv-sg            only web-srv
-
-  app-Srv-sg            4000, 22     app-Internal-alb-sg   only app-Internal-alb-sg and jump
-                                                           server access
-
-                                     jump-server           
-
-  DB-srv                3306, 22     app-Srv-sg            only app-srv and jump server access
-
-                        3306         jump-server           
-  --------------------------------------------------------------------------------------------
+| SG name             | Inbound Port | Access Source           | Description                                    |
+|---------------------|--------------|-------------------------|------------------------------------------------|
+| Jump Server         | 22           | MY-ip                   | Access from my laptop                          |
+| web-frontend-alb    | 80           | 0.0.0.0/0               | All access from internet                       |
+| Web-srv-sg          | 80, 22       | web-frontend-alb        | Only front-alb and jump server access          |
+|                     |              | jump-server             |                                                |
+| app-Internal-alb-sg | 80           | Web-srv-sg              | Only web-srv                                   |
+| app-Srv-sg          | 4000, 22     | app-Internal-alb-sg     | Only app-Internal-alb-sg and jump server access|
+|                     |              | jump-server             |                                                |
+| DB-srv              | 3306, 22     | app-Srv-sg              | Only app-srv and jump server access            |
+|                     | 3306         | jump-server             |                                                |
 
 ## Create a VPC
 
-  -------------------------------------------------------------------------------
-  \#   Component      Name                    CIDR / Details
-  ---- -------------- ----------------------- -----------------------------------
-  1    VPC            3-tier-vpc              10.0.0.0/16
+### VPC and Subnets
 
-  12   Subnets        Public-Subnet-1a        10.0.16.0/20
+| #  | Component | Name                    | CIDR / Details |
+|----|-----------|-------------------------|----------------|
+| 1  | VPC       | 3-tier-vpc              | 10.0.0.0/16    |
+| 12 | Subnets   | Public-Subnet-1a        | 10.0.16.0/20   |
+|    |           | Public-Subnet-1b        | 10.0.32.0/20   |
+|    |           | Public-Subnet-1c        | 10.0.48.0/20   |
+|    |           | Web-Private-Subnet-1a   | 10.0.64.0/20   |
+|    |           | Web-Private-Subnet-1b   | 10.0.80.0/20   |
+|    |           | Web-Private-Subnet-1c   | 10.0.96.0/20   |
+|    |           | App-Private-Subnet-1a   | 10.0.112.0/20  |
+|    |           | App-Private-Subnet-1b   | 10.0.128.0/20  |
+|    |           | App-Private-Subnet-1c   | 10.0.144.0/20  |
+|    |           | DB-Private-Subnet-1a    | 10.0.160.0/20  |
+|    |           | DB-Private-Subnet-1b    | 10.0.176.0/20  |
+|    |           | DB-Private-Subnet-1c    | 10.0.192.0/20  |
 
-                      Public-Subnet-1b        10.0.32.0/20
+### Internet Gateway, NAT Gateways, and Route Tables
 
-                      Public-Subnet-1c        10.0.48.0/20
-
-                      Web-Private-Subnet-1a   10.0.64.0/20
-
-                      Web-Private-Subnet-1b   10.0.80.0/20
-
-                      Web-Private-Subnet-1c   10.0.96.0/20
-
-                      App-Private-Subnet-1a   10.0.112.0/20
-
-                      App-Private-Subnet-1b   10.0.128.0/20
-
-                      App-Private-Subnet-1c   10.0.144.0/20
-
-                      DB-Private-Subnet-1a    10.0.160.0/20
-
-                      DB-Private-Subnet-1b    10.0.176.0/20
-
-                      DB-Private-Subnet-1c    10.0.192.0/20
-  -------------------------------------------------------------------------------
-
-  --------------------------------------------------------------------------
-  \#   Component       Name/Route Table           CIDR/Details    NAT
-                                                                  Gateway
-  ---- --------------- -------------------------- --------------- ----------
-  1    Internet        3-tier-igw                                 
-       Gateway                                                    
-
-  3    Nat gateway     3-tier-1a                                  
-
-                       3-tier-1b                                  
-
-                       3-tier-1c                                  
-
-  10   Route-Table     3-tier-Public-rt                           
-
-                       3-tier-web-Private-rt-1a   10.0.64.0/20    nat-1a
-
-                       3-tier-web-Private-rt-1b   10.0.80.0/20    nat-1b
-
-                       3-tier-web-Private-rt-1c   10.0.96.0/20    nat-1c
-
-                       3-tier-app-Private-rt-1a   10.0.112.0/20   nat-1a
-
-                       3-tier-app-Private-rt-1b   10.0.128.0/20   nat-1b
-
-                       3-tier-app-Private-rt-1c   10.0.144.0/20   nat-1c
-
-                       3-tier-db-Private-rt-1a    10.0.160.0/20   nat-1a
-
-                       3-tier-db-Private-rt-1b    10.0.176.0/20   nat-1b
-
-                       3-tier-db-Private-rt-1c    10.0.192.0/20   nat-1c
-  --------------------------------------------------------------------------
+| #  | Component       | Name/Route Table           | CIDR/Details  | NAT Gateway |
+|----|-----------------|----------------------------|---------------|-------------|
+| 1  | Internet Gateway| 3-tier-igw                 |               |             |
+| 3  | NAT Gateway     | 3-tier-1a                  |               |             |
+|    |                 | 3-tier-1b                  |               |             |
+|    |                 | 3-tier-1c                  |               |             |
+| 10 | Route Table     | 3-tier-Public-rt           |               |             |
+|    |                 | 3-tier-web-Private-rt-1a   | 10.0.64.0/20  | nat-1a      |
+|    |                 | 3-tier-web-Private-rt-1b   | 10.0.80.0/20  | nat-1b      |
+|    |                 | 3-tier-web-Private-rt-1c   | 10.0.96.0/20  | nat-1c      |
+|    |                 | 3-tier-app-Private-rt-1a   | 10.0.112.0/20 | nat-1a      |
+|    |                 | 3-tier-app-Private-rt-1b   | 10.0.128.0/20 | nat-1b      |
+|    |                 | 3-tier-app-Private-rt-1c   | 10.0.144.0/20 | nat-1c      |
+|    |                 | 3-tier-db-Private-rt-1a    | 10.0.160.0/20 | nat-1a      |
+|    |                 | 3-tier-db-Private-rt-1b    | 10.0.176.0/20 | nat-1b      |
+|    |                 | 3-tier-db-Private-rt-1c    | 10.0.192.0/20 | nat-1c      |
 
 ## Setup the Ec2-instance and create the IAM (WEB Tier)
 
@@ -128,7 +89,7 @@ Only Packages: - mysql client - nvm - pm2
 
 ## Create the S3 Buckets
 
-git clone [https://github.com/harishnshetty/3-tier-aws-15-services.git](https://github.com/pavan-1309/3-tier-web-application.git)
+git clone [https://github.com/pavan-1309/3-tier-web-application.git](https://github.com/pavan-1309/3-tier-web-application.git)
 
 1.  3-tier-aws-project-8745\
 2.  3tier-vpc-flow-log-8745 (attach immediately)
@@ -137,28 +98,24 @@ git clone [https://github.com/harishnshetty/3-tier-aws-15-services.git](https://
 
 ### First Create the subnet Group
 
-  -----------------------------------------------------------------------
-  Name                three-subnet-gp-rds
-  ------------------- ---------------------------------------------------
-  VPC                 three-tier-rds-subnetgroup
-
-  AZ                  1a, b, c
-
-  Subnets             DB-Private-Subnet-1a, DB-Private-Subnet-1b,
-                      DB-Private-Subnet-1c
-  -----------------------------------------------------------------------
+| Parameter | Value                                                      |
+|-----------|------------------------------------------------------------||
+| Name      | three-subnet-gp-rds                                        |
+| VPC       | three-tier-rds-subnetgroup                                 |
+| AZ        | 1a, b, c                                                   |
+| Subnets   | DB-Private-Subnet-1a, DB-Private-Subnet-1b, DB-Private-Subnet-1c |
 
 ### DB Parameters
 
-  Parameter                Value
-  ------------------------ --------------------
-  DB instance identifier   db-3tier
-  Master username          admin
-  Password                 SuperadminPassword
-  Instance class           db.t3.small
-  Storage                  20GB
-  VPC                      3-tier-vpc
-  Security Group           db-srv
+| Parameter              | Value              |
+|------------------------|--------------------||
+| DB instance identifier | db-3tier           |
+| Master username        | admin              |
+| Password               | SuperadminPassword |
+| Instance class         | db.t3.small        |
+| Storage                | 20GB               |
+| VPC                    | 3-tier-vpc         |
+| Security Group         | db-srv             |
 
 ## Secrets Manager
 
@@ -246,33 +203,24 @@ echo "=== App Tier User-data Completed ==="
 
 ## Create Target Groups
 
-  Tier       Name       Port   Health-check
-  ---------- ---------- ------ --------------
-  Web Tier   Web-tier   80     /
-  App Tier   App-tier   4000   /health
+| Tier     | Name     | Port | Health-check |
+|----------|----------|------|--------------||
+| Web Tier | Web-tier | 80   | /            |
+| App Tier | App-tier | 4000 | /health      |
 
 ## Create Load Balancers
 
-  ------------------------------------------------------------------------------------------------
-  LB Name        Type              Subnets               SG                    Listener
-  -------------- ----------------- --------------------- --------------------- -------------------
-  app-alb        Internal-facing   App-private-subnets   app-Internal-alb-sg   80 -\> app-tier
-
-  web-alb        Internet-facing   Public subnets        web-frontend-alb      80 -\> web-tier
-  ------------------------------------------------------------------------------------------------
+| LB Name | Type            | Subnets             | SG                  | Listener        |
+|---------|-----------------|---------------------|---------------------|-----------------||
+| app-alb | Internal-facing | App-private-subnets | app-Internal-alb-sg | 80 -> app-tier  |
+| web-alb | Internet-facing | Public subnets      | web-frontend-alb    | 80 -> web-tier  |
 
 ## Create Auto Scaling Groups
 
-  --------------------------------------------------------------------------------------------------
-  Name           Launch        Instance   Subnets   LB         desired   min   max   Notifications
-                 template                                                            
-  -------------- ------------- ---------- --------- ---------- --------- ----- ----- ---------------
-  web-tier-asg   web-tier-lb   t2.micro   Web       web-tier   3         3     6     web-tier-sns
-                                          subnets                                    
-
-  app-tier-asg   app-tier-lb   t2.micro   App       app-tier   3         3     6     app-tier-sns
-                                          subnets                                    
-  --------------------------------------------------------------------------------------------------
+| Name         | Launch Template | Instance | Subnets     | LB       | Desired | Min | Max | Notifications |
+|--------------|-----------------|----------|-------------|----------|---------|-----|-----|---------------||
+| web-tier-asg | web-tier-lb     | t2.micro | Web subnets | web-tier | 3       | 3   | 6   | web-tier-sns  |
+| app-tier-asg | app-tier-lb     | t2.micro | App subnets | app-tier | 3       | 3   | 6   | app-tier-sns  |
 
 ## CloudWatch
 
