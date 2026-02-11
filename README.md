@@ -332,14 +332,14 @@ Route 53 → CloudFront (CDN) → WAF
 
 ## Security Best Practices
 
-✅ All instances in private subnets 
-✅ Security groups with least privilege 
-✅ Database credentials in Secrets Manager 
-✅ VPC Flow Logs enabled 
-✅ CloudTrail for audit logging 
-✅ WAF for application protection 
-✅ SSL/TLS encryption with ACM 
-✅ IAM roles instead of access keys 
+- All instances in private subnets 
+- Security groups with least privilege 
+- Database credentials in Secrets Manager 
+- VPC Flow Logs enabled 
+- CloudTrail for audit logging 
+- WAF for application protection 
+- SSL/TLS encryption with ACM 
+- IAM roles instead of access keys 
 
 ## Monitoring & Alerts
 
