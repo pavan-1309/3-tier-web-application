@@ -1,9 +1,5 @@
 # App-tier Setup 
-## youtube (https://www.youtube.com/@devopsHarishNShetty)
-# For more Projects. https://harishnshetty.github.io/projects.html
 ## INSTALLING MYSQL IN AMAZON LINUX 2023
-## (REF: https://dev.to/aws-builders/installing-mysql-on-amazon-linux-2023-1512)
-
 ```bash
 #!/bin/bash
 sudo su - ec2-user
@@ -32,19 +28,25 @@ sudo ./aws/install
 # Download and install nvm:
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 
-# in lieu of restarting the shell
+# Load nvm without restarting the shell
 \. "$HOME/.nvm/nvm.sh"
 
-# Download and install Node.js:
-nvm install 22
+# Download and install Node.js (latest LTS 24)
+nvm install 24
+
+# Verify Node.js & npm versions
+node -v   # Should print "v24.13.1"
+npm -v    # Should print "11.8.0"
+
+# Install pm2 globally
 npm install -g pm2
 
-# Verify the Node.js version:
-node -v # Should print "v22.19.0".
-nvm current # Should print "v22.19.0".
+# Install yarn globally
+npm install -g yarn
 
-# Verify npm version:
-npm -v # Should print "10.9.3".
+# Verify pm2 & yarn
+pm2 -v
+yarn -v
 ```
 
 ## !!! IMP  --USER DATA SCRIPT !!!
@@ -52,21 +54,31 @@ npm -v # Should print "10.9.3".
 
 ```bash
 #!/bin/bash
-# Log everything to /var/log/user-data.log
-exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+exec > >(tee /var/log/user-data.log | logger -t user-data -s 2>/dev/console) 2>&1
 
-# Install AWS CLI v2 (if not already)
-yum install -y awscli
+echo "=== App Tier User-data Started ==="
 
-# Download application code from S3
-aws s3 cp s3://<YOUR-S3-BUCKET-NAME>/application-code /home/ec2-user/application-code --recursive
+export HOME=/home/ec2-user
 
-# Go to app directory
+yum update -y
+yum install -y awscli dos2unix -y
+
+mkdir -p /home/ec2-user/application-code
+
+aws s3 cp s3://<your source code bucket name>/application-code/ /home/ec2-user/application-code/ --recursive
+
+# FIX PERMISSIONS
+chown -R ec2-user:ec2-user /home/ec2-user/application-code
+
 cd /home/ec2-user/application-code
 
-# Make script executable and run it
+dos2unix app.sh
 chmod +x app.sh
-sudo ./app.sh
+
+bash app.sh
+
+echo "=== App Tier User-data Completed ==="
+
 
 ```
 curl http://localhost:4000/health #(To do the health check)
