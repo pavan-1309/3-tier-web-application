@@ -214,8 +214,8 @@ echo "=== App Tier User-data Completed ==="
 
 | Name         | Launch Template | Instance | Subnets     | LB       | Desired | Min | Max | Notifications |
 |--------------|-----------------|----------|-------------|----------|---------|-----|-----|---------------|
-| web-tier-asg | web-tier-lb     | t2.micro | Web subnets | web-tier | 3       | 3   | 6   | web-tier-sns  |
-| app-tier-asg | app-tier-lb     | t2.micro | App subnets | app-tier | 3       | 3   | 6   | app-tier-sns  |
+| web-tier-asg | web-tier-lb     | t2.micro | Web subnets | web-tier | 2       | 1   | 3   | web-tier-sns  |
+| app-tier-asg | app-tier-lb     | t2.micro | App subnets | app-tier | 2       | 1   | 3   | app-tier-sns  |
 
 ## Configure CloudWatch Alarms
 
@@ -332,14 +332,14 @@ Route 53 → CloudFront (CDN) → WAF
 
 ## Security Best Practices
 
-✅ All instances in private subnets
-✅ Security groups with least privilege
-✅ Database credentials in Secrets Manager
-✅ VPC Flow Logs enabled
-✅ CloudTrail for audit logging
-✅ WAF for application protection
-✅ SSL/TLS encryption with ACM
-✅ IAM roles instead of access keys
+✅ All instances in private subnets 
+✅ Security groups with least privilege 
+✅ Database credentials in Secrets Manager 
+✅ VPC Flow Logs enabled 
+✅ CloudTrail for audit logging 
+✅ WAF for application protection 
+✅ SSL/TLS encryption with ACM 
+✅ IAM roles instead of access keys 
 
 ## Monitoring & Alerts
 
@@ -352,6 +352,6 @@ Route 53 → CloudFront (CDN) → WAF
 
 ---
 
-**Project Status**: ✅ Production Ready
+**Project Status**:  Production Ready
 
 **Last Updated**: February 2026
