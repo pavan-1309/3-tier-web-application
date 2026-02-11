@@ -5,7 +5,7 @@ const secretsManager = new AWS.SecretsManager({
 
 async function getDatabaseSecrets() {
   try {
-    const secretName = "rds-creds";
+    const secretName = "<your rds secret name>";
     const data = await secretsManager.getSecretValue({ SecretId: secretName }).promise();
 
     if ('SecretString' in data) {
