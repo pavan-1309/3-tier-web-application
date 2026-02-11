@@ -29,14 +29,14 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 \. "$HOME/.nvm/nvm.sh"
 
 # Download and install Node.js:
-nvm install 22
+nvm install 24
 
 # Verify the Node.js version:
-node -v # Should print "v22.19.0".
-nvm current # Should print "v22.19.0".
+node -v # Should print "v24.13.1".
 
 # Verify npm version:
-npm -v # Should print "10.9.3".
+npm -v # Should print "11.8.0".
+
 ```
 
 
@@ -47,21 +47,29 @@ npm -v # Should print "10.9.3".
 
 ```bash
 #!/bin/bash
-# Log everything to /var/log/user-data.log
-exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+exec > >(tee /var/log/user-data.log | logger -t user-data -s 2>/dev/console) 2>&1
 
-# Install AWS CLI v2 (if not already)
-yum install -y awscli
+echo "*** USER DATA STARTED ***"
 
-# Download application code from S3
-aws s3 cp s3://<YOUR-S3-BUCKET-NAME>/application-code /home/ec2-user/application-code --recursive
+export HOME=/home/ec2-user
 
-# Go to app directory
+yum update -y
+yum install -y awscli dos2unix -y
+
+mkdir -p /home/ec2-user/application-code
+chown ec2-user:ec2-user /home/ec2-user/application-code
+
+aws s3 cp s3://3-tier-s3bucket-10-02-2026/application-code/ /home/ec2-user/application-code --recursive
+
 cd /home/ec2-user/application-code
 
-# Make script executable and run it
+# CRUCIAL FIX
+dos2unix web.sh
+
 chmod +x web.sh
-sudo ./web.sh
+bash web.sh
+
+echo "*** USER DATA COMPLETED ***"
 ```
 
 
