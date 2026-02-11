@@ -1,4 +1,4 @@
-## \# AWS Three Tier Web Architecture Workshop
+# AWS Three Tier Web Architecture Workshop
 
     1. VPC (12 Subnets, 10 Route Tables, 1 IGW, 3 NAT)
     2. Security Group (Cross-connection)
@@ -19,17 +19,14 @@
 
 ## Create a Security Group
 
-| SG name             | Inbound Port | Access Source           | Description                                    |
-|---------------------|--------------|-------------------------|------------------------------------------------|
-| Jump Server         | 22           | MY-ip                   | Access from my laptop                          |
-| web-frontend-alb    | 80           | 0.0.0.0/0               | All access from internet                       |
-| Web-srv-sg          | 80, 22       | web-frontend-alb        | Only front-alb and jump server access          |
-|                     |              | jump-server             |                                                |
-| app-Internal-alb-sg | 80           | Web-srv-sg              | Only web-srv                                   |
-| app-Srv-sg          | 4000, 22     | app-Internal-alb-sg     | Only app-Internal-alb-sg and jump server access|
-|                     |              | jump-server             |                                                |
-| DB-srv              | 3306, 22     | app-Srv-sg              | Only app-srv and jump server access            |
-|                     | 3306         | jump-server             |                                                |
+| SG name             | Inbound Port | Access Source                    | Description                                     |
+|---------------------|--------------|----------------------------------|-------------------------------------------------|
+| Jump Server         | 22           | MY-ip                            | Access from my laptop                           |
+| web-frontend-alb    | 80           | 0.0.0.0/0                        | All access from internet                        |
+| Web-srv-sg          | 80, 22       | web-frontend-alb, jump-server    | Only front-alb and jump server access           |
+| app-Internal-alb-sg | 80           | Web-srv-sg                       | Only web-srv                                    |
+| app-Srv-sg          | 4000, 22     | app-Internal-alb-sg, jump-server | Only app-Internal-alb-sg and jump server access |
+| DB-srv              | 3306, 22     | app-Srv-sg, jump-server          | Only app-srv and jump server access             |
 
 ## Create a VPC
 
@@ -53,22 +50,22 @@
 
 ### Internet Gateway, NAT Gateways, and Route Tables
 
-| #  | Component       | Name/Route Table           | CIDR/Details  | NAT Gateway |
-|----|-----------------|----------------------------|---------------|-------------|
-| 1  | Internet Gateway| 3-tier-igw                 |               |             |
-| 3  | NAT Gateway     | 3-tier-1a                  |               |             |
-|    |                 | 3-tier-1b                  |               |             |
-|    |                 | 3-tier-1c                  |               |             |
-| 10 | Route Table     | 3-tier-Public-rt           |               |             |
-|    |                 | 3-tier-web-Private-rt-1a   | 10.0.64.0/20  | nat-1a      |
-|    |                 | 3-tier-web-Private-rt-1b   | 10.0.80.0/20  | nat-1b      |
-|    |                 | 3-tier-web-Private-rt-1c   | 10.0.96.0/20  | nat-1c      |
-|    |                 | 3-tier-app-Private-rt-1a   | 10.0.112.0/20 | nat-1a      |
-|    |                 | 3-tier-app-Private-rt-1b   | 10.0.128.0/20 | nat-1b      |
-|    |                 | 3-tier-app-Private-rt-1c   | 10.0.144.0/20 | nat-1c      |
-|    |                 | 3-tier-db-Private-rt-1a    | 10.0.160.0/20 | nat-1a      |
-|    |                 | 3-tier-db-Private-rt-1b    | 10.0.176.0/20 | nat-1b      |
-|    |                 | 3-tier-db-Private-rt-1c    | 10.0.192.0/20 | nat-1c      |
+| #  | Component        | Name/Route Table           | CIDR/Details  | NAT Gateway |
+|----|------------------|----------------------------|---------------|-------------|
+| 1  | Internet Gateway | 3-tier-igw                 |               |             |
+| 3  | NAT Gateway      | 3-tier-1a                  |               |             |
+|    |                  | 3-tier-1b                  |               |             |
+|    |                  | 3-tier-1c                  |               |             |
+| 10 | Route Table      | 3-tier-Public-rt           |               |             |
+|    |                  | 3-tier-web-Private-rt-1a   | 10.0.64.0/20  | nat-1a      |
+|    |                  | 3-tier-web-Private-rt-1b   | 10.0.80.0/20  | nat-1b      |
+|    |                  | 3-tier-web-Private-rt-1c   | 10.0.96.0/20  | nat-1c      |
+|    |                  | 3-tier-app-Private-rt-1a   | 10.0.112.0/20 | nat-1a      |
+|    |                  | 3-tier-app-Private-rt-1b   | 10.0.128.0/20 | nat-1b      |
+|    |                  | 3-tier-app-Private-rt-1c   | 10.0.144.0/20 | nat-1c      |
+|    |                  | 3-tier-db-Private-rt-1a    | 10.0.160.0/20 | nat-1a      |
+|    |                  | 3-tier-db-Private-rt-1b    | 10.0.176.0/20 | nat-1b      |
+|    |                  | 3-tier-db-Private-rt-1c    | 10.0.192.0/20 | nat-1c      |
 
 ## Setup the Ec2-instance and create the IAM (WEB Tier)
 
@@ -89,26 +86,26 @@ Only Packages: - mysql client - nvm - pm2
 
 ## Create the S3 Buckets
 
-git clone [https://github.com/pavan-1309/3-tier-web-application.git](https://github.com/pavan-1309/3-tier-web-application.git)
+git clone https://github.com/pavan-1309/3-tier-web-application.git
 
-1.  3-tier-aws-project-8745\
+1.  3-tier-aws-project-8745
 2.  3tier-vpc-flow-log-8745 (attach immediately)
 
 ## Create a Mysql in the RDS
 
 ### First Create the subnet Group
 
-| Parameter | Value                                                      |
-|-----------|------------------------------------------------------------||
-| Name      | three-subnet-gp-rds                                        |
-| VPC       | three-tier-rds-subnetgroup                                 |
-| AZ        | 1a, b, c                                                   |
-| Subnets   | DB-Private-Subnet-1a, DB-Private-Subnet-1b, DB-Private-Subnet-1c |
+| Parameter | Value                                                                |
+|-----------|----------------------------------------------------------------------|
+| Name      | three-subnet-gp-rds                                                  |
+| VPC       | three-tier-rds-subnetgroup                                           |
+| AZ        | 1a, b, c                                                             |
+| Subnets   | DB-Private-Subnet-1a, DB-Private-Subnet-1b, DB-Private-Subnet-1c    |
 
 ### DB Parameters
 
 | Parameter              | Value              |
-|------------------------|--------------------||
+|------------------------|--------------------|
 | DB instance identifier | db-3tier           |
 | Master username        | admin              |
 | Password               | SuperadminPassword |
@@ -172,7 +169,6 @@ mkdir -p /home/ec2-user/application-code
 chown ec2-user:ec2-user /home/ec2-user/application-code
 aws s3 cp s3://3-tier-s3bucket-10-02-2026/application-code/ /home/ec2-user/application-code --recursive
 cd /home/ec2-user/application-code
-# CRUCIAL FIX
 dos2unix web.sh
 chmod +x web.sh
 bash web.sh
@@ -192,7 +188,6 @@ yum update -y
 yum install -y awscli dos2unix -y
 mkdir -p /home/ec2-user/application-code
 aws s3 cp s3://3-tier-s3bucket-10-02-2026/application-code/ /home/ec2-user/application-code/ --recursive
-# FIX PERMISSIONS
 chown -R ec2-user:ec2-user /home/ec2-user/application-code
 cd /home/ec2-user/application-code
 dos2unix app.sh
@@ -204,48 +199,23 @@ echo "=== App Tier User-data Completed ==="
 ## Create Target Groups
 
 | Tier     | Name     | Port | Health-check |
-|----------|----------|------|--------------||
+|----------|----------|------|--------------|
 | Web Tier | Web-tier | 80   | /            |
 | App Tier | App-tier | 4000 | /health      |
 
 ## Create Load Balancers
 
-| LB Name | Type            | Subnets             | SG                  | Listener        |
-|---------|-----------------|---------------------|---------------------|-----------------||
-| app-alb | Internal-facing | App-private-subnets | app-Internal-alb-sg | 80 -> app-tier  |
-| web-alb | Internet-facing | Public subnets      | web-frontend-alb    | 80 -> web-tier  |
+| LB Name | Type            | Subnets             | SG                  | Listener       |
+|---------|-----------------|---------------------|---------------------|----------------|
+| app-alb | Internal-facing | App-private-subnets | app-Internal-alb-sg | 80 -> app-tier |
+| web-alb | Internet-facing | Public subnets      | web-frontend-alb    | 80 -> web-tier |
 
 ## Create Auto Scaling Groups
 
-<<<<<<< HEAD
 | Name         | Launch Template | Instance | Subnets     | LB       | Desired | Min | Max | Notifications |
-|--------------|-----------------|----------|-------------|----------|---------|-----|-----|---------------||
+|--------------|-----------------|----------|-------------|----------|---------|-----|-----|---------------|
 | web-tier-asg | web-tier-lb     | t2.micro | Web subnets | web-tier | 3       | 3   | 6   | web-tier-sns  |
 | app-tier-asg | app-tier-lb     | t2.micro | App subnets | app-tier | 3       | 3   | 6   | app-tier-sns  |
-=======
-### Web Tier ASG
-- **Name**: web-tier-asg
-- **Launch Template**: web-launch-template
-- **Instance Type**: t2.micro
-- **Subnets**: Web-Private-Subnet-1a, 1b, 1c
-- **Load Balancer**: web-alb (web-tier target group)
-- **Desired**: 2
-- **Min**: 2
-- **Max**: 4
-- **Health Check**: ELB
-- **Notifications**: web-tier-sns
-
-### App Tier ASG
-- **Name**: app-tier-asg
-- **Launch Template**: app-launch-template
-- **Instance Type**: t2.micro
-- **Subnets**: App-Private-Subnet-1a, 1b, 1c
-- **Load Balancer**: app-alb (app-tier target group)
-- **Desired**: 2
-- **Min**: 2
-- **Max**: 4
-- **Health Check**: ELB
-- **Notifications**: app-tier-sns
 
 ## Configure CloudWatch Alarms
 
@@ -384,24 +354,4 @@ Route 53 → CloudFront (CDN) → WAF
 
 **Project Status**: ✅ Production Ready
 
-**Last Updated**: February 2026            template                                                            
-  -------------- ------------- ---------- --------- ---------- --------- ----- ----- ---------------
-  web-tier-asg   web-tier-lb   t2.micro   Web       web-tier   3         3     6     web-tier-sns
-                                          subnets                                    
-
-  app-tier-asg   app-tier-lb   t2.micro   App       app-tier   3         3     6     app-tier-sns
-                                          subnets                                    
-  --------------------------------------------------------------------------------------------------
->>>>>>> b7f6cc7d95b300de5604c2a37f7be173c8f46c75
-
-## CloudWatch
-
--   all alarms → EC2 → ASG → CPU utilization
-
-## CloudFront
-
-## ACM
-
-## WAF
-
-## Route53
+**Last Updated**: February 2026
