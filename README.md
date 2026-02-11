@@ -16,7 +16,7 @@
     14. ACM (SSL Certificates)
     15. WAF 
     16. Route 53
-![Alt Text](/application-code/web-tier/src/assets3TierArch.png)
+![Alt Text](/application-code/web-tier/src/assets/3TierArch.png)
 ## Create a Security Group
 
 | SG name             | Inbound Port | Access Source                    | Description                                     |
