@@ -24,6 +24,11 @@ set -e
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
 
+# Install Node.js 24
+nvm install 24
+nvm use 24
+nvm alias default 24
+
 cd $HOME/web-tier
 
 npm install
@@ -54,7 +59,7 @@ events {
 http {
     log_format main '$remote_addr - $remote_user [$time_local] "$request" '
                     '$status $body_bytes_sent "$http_referer" '
-                    '"$request" "$remote_addr"';
+                    '"$http_user_agent" "$http_x_forwarded_for"';
 
     access_log /var/log/nginx/access.log main;
 
@@ -83,7 +88,7 @@ http {
         location /api/ {
             rewrite ^/api/(.*)$ /$1 break;
 
-            proxy_pass http://internal-app-alb-158464626.ap-south-1.elb.amazonaws.com:80/;
+            proxy_pass http://internal-app-1443345930.ap-south-1.elb.amazonaws.com:80/;
             proxy_http_version 1.1;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;

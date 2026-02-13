@@ -9,7 +9,7 @@ import DatabaseDemo from './components/DatabaseDemo/DatabaseDemo'
 import Home from './components/Home/Home'
 import {
   HashRouter as Router,
-  Switch,
+  Routes,
   Route,
 } from "react-router-dom";
 
@@ -30,14 +30,10 @@ function App() {
             <Router>
               <div>
             <Menu open={open} setOpen={setOpen} id={menuId} />
-            <Switch>
-          <Route path="/db">
-            <DatabaseDemo />
-          </Route>
-          <Route path="/">
-            <Home/>
-          </Route>
-        </Switch>
+            <Routes>
+          <Route path="/db" element={<DatabaseDemo />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
         </div>
         </Router>
           </FocusLock>

@@ -2,17 +2,21 @@
   "name": "aws-3tier-web-layer",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=24.0.0",
+    "npm": ">=11.0.0"
+  },
   "dependencies": {
-    "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.2.0",
-    "@testing-library/user-event": "^13.5.0",
-    "react": "^18.1.0",
-    "react-dom": "^18.1.0",
-    "react-focus-lock": "^2.5.0",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "5.0.1",
-    "styled-components": "^5.2.1",
-    "web-vitals": "^2.1.4"
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.1",
+    "@testing-library/user-event": "^14.5.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-focus-lock": "^2.13.2",
+    "react-router-dom": "^6.28.0",
+    "react-scripts": "^5.0.1",
+    "styled-components": "^6.1.13",
+    "web-vitals": "^4.2.4"
   },
   "scripts": {
     "start": "react-scripts start",

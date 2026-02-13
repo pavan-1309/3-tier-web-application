@@ -14,7 +14,7 @@ echo "Copying app-tier code..."
 cp -r "$SRC_DIR"/* "$APP_DIR"/
 
 echo "Fixing ownership..."
-sudo chown -R ec2-user:ec2-user "$APP_DIR"
+chown -R ec2-user:ec2-user "$APP_DIR"
 
 echo "Running Node.js setup as ec2-user..."
 
@@ -22,6 +22,11 @@ su - ec2-user <<'EOF'
 set -e
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+
+# Install Node.js 24
+nvm install 24
+nvm use 24
+nvm alias default 24
 
 cd $HOME/app-tier
 

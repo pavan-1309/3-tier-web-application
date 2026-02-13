@@ -1,14 +1,14 @@
-const AWS = require('aws-sdk');
-const secretsManager = new AWS.SecretsManager({
-  region: 'ap-south-1'
-});
+const { SecretsManagerClient, GetSecretValueCommand } = require('@aws-sdk/client-secrets-manager');
+
+const client = new SecretsManagerClient({ region: 'ap-south-1' });
 
 async function getDatabaseSecrets() {
   try {
-    const secretName = "<your rds secret name>";
-    const data = await secretsManager.getSecretValue({ SecretId: secretName }).promise();
+    const secretName = "rds-secret";
+    const command = new GetSecretValueCommand({ SecretId: secretName });
+    const data = await client.send(command);
 
-    if ('SecretString' in data) {
+    if (data.SecretString) {
       const secrets = JSON.parse(data.SecretString);
       return {
         DB_HOST: secrets.DB_HOST,
@@ -23,6 +23,6 @@ async function getDatabaseSecrets() {
   }
 }
 
-module.exports = getDatabaseSecrets();
+module.exports = getDatabaseSecrets;
 
 

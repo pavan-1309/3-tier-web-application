@@ -1,5 +1,5 @@
-const dbConfigPromise = require('./DbConfig');
-const mysql = require('mysql');
+const dbConfigPromise = require('./DbConfig')();
+const mysql = require('mysql2');
 
 let con;
 
